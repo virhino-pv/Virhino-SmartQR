@@ -12,14 +12,16 @@ export const FounderSection: React.FC = () => {
       <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 sm:gap-8">
         {/* Founder Photo */}
         <div className="relative shrink-0 group">
-          <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-3xl p-1.5 bg-gradient-to-tr from-brand-600 via-electric-500 to-cyan-400 shadow-xl shadow-brand-500/20 group-hover:scale-105 transition-transform duration-300">
-            <img
-              src="/brand/founder.jpg"
-              alt="Vignesh G - Founder of Virhino"
-              className="w-full h-full object-cover rounded-[22px] bg-white"
-            />
+          <div className="w-40 h-48 sm:w-48 sm:h-60 rounded-3xl p-1.5 bg-gradient-to-tr from-brand-600 via-electric-500 to-cyan-400 shadow-xl shadow-brand-500/20 group-hover:scale-[1.02] transition-transform duration-300">
+            <div className="w-full h-full rounded-[22px] overflow-hidden bg-slate-900">
+              <img
+                src="/brand/founder.jpg"
+                alt="Vignesh G - Founder of Virhino"
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
           </div>
-          <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-900 text-white shadow-md border border-slate-700 whitespace-nowrap">
+          <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-900 text-white shadow-lg border border-slate-700 whitespace-nowrap">
             Founder
           </span>
         </div>

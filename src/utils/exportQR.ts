@@ -97,12 +97,23 @@ function roundRect(
   h: number,
   r: number
 ) {
+  const radius = Math.min(Math.max(0, r), w / 2, h / 2);
+  if (typeof ctx.roundRect === 'function') {
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, radius);
+    ctx.closePath();
+    return;
+  }
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y + w, x, y, r);
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + w - radius, y);
+  ctx.arcTo(x + w, y, x + w, y + radius, radius);
+  ctx.lineTo(x + w, y + h - radius);
+  ctx.arcTo(x + w, y + h, x + w - radius, y + h, radius);
+  ctx.lineTo(x + radius, y + h);
+  ctx.arcTo(x, y + h, x, y + h - radius, radius);
+  ctx.lineTo(x, y + radius);
+  ctx.arcTo(x, y, x + radius, y, radius);
   ctx.closePath();
 }
 

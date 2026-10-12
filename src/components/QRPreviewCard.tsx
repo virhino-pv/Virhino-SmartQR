@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   FileCode,
   Wand2,
+  Maximize2,
 } from 'lucide-react';
 import type { QRConfig, ScanVerificationResult } from '../types/qr';
 import {
@@ -258,6 +259,73 @@ export const QRPreviewCard: React.FC<QRPreviewCardProps> = ({
   const logoSizePx = Math.round(280 * config.logoSize);
   const badgeSizePx = logoSizePx + config.logoMargin * 4;
 
+  // The single unified QR Code and Logo block
+  const qrDisplayContent = (
+    <div className="flex flex-col items-center justify-center">
+      <div className="relative flex items-center justify-center">
+        <div
+          ref={qrRef}
+          className="flex items-center justify-center rounded-xl overflow-hidden transition-transform"
+        />
+
+        {/* Center Logo Overlay ensuring 100% visibility */}
+        {config.logoUrl && (
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{ zIndex: 10 }}
+          >
+            <div
+              className={`flex items-center justify-center shadow-md transition-all ${
+                config.logoBadgeShape === 'circle'
+                  ? 'rounded-full'
+                  : config.logoBadgeShape === 'square'
+                  ? 'rounded-xl'
+                  : ''
+              }`}
+              style={{
+                backgroundColor:
+                  config.logoBadgeShape !== 'none'
+                    ? config.logoBadgeColor || '#ffffff'
+                    : 'transparent',
+                width: `${badgeSizePx}px`,
+                height: `${badgeSizePx}px`,
+                padding: `${config.logoMargin * 1.5}px`,
+              }}
+            >
+              <img
+                src={config.logoUrl}
+                alt="Center logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Live Frame / Caption rendered in preview */}
+      {config.frameStyle === 'scan-me-bottom' && (
+        <div
+          className="mt-3.5 px-6 py-2 rounded-full text-xs font-black tracking-widest uppercase shadow-sm flex items-center gap-1.5 transition-all"
+          style={{
+            backgroundColor: config.frameColor,
+            color: config.frameTextColor,
+          }}
+        >
+          <span>{captionText}</span>
+        </div>
+      )}
+
+      {config.frameStyle === 'polaroid' && (
+        <div
+          className="mt-3 text-xs font-extrabold uppercase tracking-widest"
+          style={{ color: config.frameColor }}
+        >
+          {captionText}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl shadow-brand-500/5 p-6 lg:p-7 sticky top-20 flex flex-col gap-6">
       {/* Top Preview Controls */}
@@ -278,96 +346,51 @@ export const QRPreviewCard: React.FC<QRPreviewCardProps> = ({
               : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
           }`}
         >
-          <Smartphone className="w-3.5 h-3.5" />
-          <span>{showPhoneMockup ? 'Standard View' : 'Phone Simulator'}</span>
+          {showPhoneMockup ? (
+            <>
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span>Standard View</span>
+            </>
+          ) : (
+            <>
+              <Smartphone className="w-3.5 h-3.5" />
+              <span>Phone Simulator</span>
+            </>
+          )}
         </button>
       </div>
 
       {/* Main Preview Container */}
-      <div className="flex flex-col items-center justify-center min-h-[360px] py-2">
+      <div className="flex flex-col items-center justify-center min-h-[360px] py-2 w-full overflow-hidden">
         {showPhoneMockup ? (
-          /* Phone Mockup Screen */
-          <div className="w-[280px] bg-slate-900 p-3 rounded-[38px] shadow-2xl border-4 border-slate-800 ring-1 ring-slate-700/50">
+          /* Phone Mockup Screen with scaled container so QR never overflows */
+          <div className="w-[310px] max-w-full bg-slate-900 p-3.5 rounded-[42px] shadow-2xl border-4 border-slate-800 ring-1 ring-slate-700/50 transition-all">
             {/* Speaker notch */}
             <div className="w-24 h-4 bg-slate-800 mx-auto rounded-b-xl mb-3 flex items-center justify-center">
               <div className="w-8 h-1 bg-slate-700 rounded-full"></div>
             </div>
 
             {/* Inner Phone Screen */}
-            <div className="bg-slate-50 rounded-[28px] p-3 text-center flex flex-col items-center">
+            <div className="bg-slate-100/90 rounded-[30px] p-3 text-center flex flex-col items-center overflow-hidden">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-                Virhino Pass
+                Virhino Smart Pass
               </span>
 
-              {/* QR Render Target */}
-              <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center">
-                <div className="relative flex items-center justify-center">
-                  <div ref={qrRef} className="flex items-center justify-center" />
-                  {/* Center Logo Overlay for Phone Mockup */}
-                  {config.logoUrl && (
-                    <div
-                      className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                      style={{ zIndex: 10 }}
-                    >
-                      <div
-                        className={`flex items-center justify-center shadow-md transition-all ${
-                          config.logoBadgeShape === 'circle'
-                            ? 'rounded-full'
-                            : config.logoBadgeShape === 'square'
-                            ? 'rounded-xl'
-                            : ''
-                        }`}
-                        style={{
-                          backgroundColor:
-                            config.logoBadgeShape !== 'none'
-                              ? config.logoBadgeColor || '#ffffff'
-                              : 'transparent',
-                          width: `${badgeSizePx}px`,
-                          height: `${badgeSizePx}px`,
-                          padding: `${config.logoMargin * 1.5}px`,
-                        }}
-                      >
-                        <img
-                          src={config.logoUrl}
-                          alt="Center logo"
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {config.frameStyle === 'scan-me-bottom' && (
-                  <div
-                    className="mt-2.5 px-4 py-1 rounded-full text-xs font-black tracking-wider uppercase shadow-sm"
-                    style={{
-                      backgroundColor: config.frameColor,
-                      color: config.frameTextColor,
-                    }}
-                  >
-                    {captionText}
-                  </div>
-                )}
-                {config.frameStyle === 'polaroid' && (
-                  <div
-                    className="mt-2 text-xs font-bold uppercase tracking-wider"
-                    style={{ color: config.frameColor }}
-                  >
-                    {captionText}
-                  </div>
-                )}
+              {/* Scaled QR Card inside Phone */}
+              <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col items-center w-full transform scale-[0.88] origin-top">
+                {qrDisplayContent}
               </div>
 
-              <p className="text-[11px] font-semibold text-slate-600 mt-2 truncate max-w-[200px]">
+              <p className="text-[11px] font-semibold text-slate-600 -mt-3 mb-1 truncate max-w-[200px]">
                 {config.url}
               </p>
-              <div className="w-16 h-1 bg-slate-300 rounded-full mt-3 mb-1 mx-auto"></div>
+              <div className="w-16 h-1 bg-slate-300 rounded-full my-2 mx-auto"></div>
             </div>
           </div>
         ) : (
-          /* Standard Live Canvas Card */
+          /* Standard Live Canvas Card (Clean, stable, non-overflowing) */
           <div
-            className={`p-6 rounded-2xl transition-all flex flex-col items-center justify-center ${
+            className={`p-6 rounded-2xl transition-all flex flex-col items-center justify-center w-full max-w-[340px] ${
               config.frameStyle === 'card-border' || config.frameStyle === 'polaroid'
                 ? 'border-2 border-slate-200 bg-white shadow-md'
                 : 'bg-white'
@@ -376,68 +399,7 @@ export const QRPreviewCard: React.FC<QRPreviewCardProps> = ({
               backgroundColor: config.backgroundColor || '#ffffff',
             }}
           >
-            {/* The QR Canvas itself with Logo Overlay */}
-            <div className="relative flex items-center justify-center">
-              <div
-                ref={qrRef}
-                className="flex items-center justify-center rounded-xl overflow-hidden transition-transform"
-              />
-
-              {/* Center Logo Overlay ensuring 100% visibility */}
-              {config.logoUrl && (
-                <div
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                  style={{ zIndex: 10 }}
-                >
-                  <div
-                    className={`flex items-center justify-center shadow-md transition-all ${
-                      config.logoBadgeShape === 'circle'
-                        ? 'rounded-full'
-                        : config.logoBadgeShape === 'square'
-                        ? 'rounded-xl'
-                        : ''
-                    }`}
-                    style={{
-                      backgroundColor:
-                        config.logoBadgeShape !== 'none'
-                          ? config.logoBadgeColor || '#ffffff'
-                          : 'transparent',
-                      width: `${badgeSizePx}px`,
-                      height: `${badgeSizePx}px`,
-                      padding: `${config.logoMargin * 1.5}px`,
-                    }}
-                  >
-                    <img
-                      src={config.logoUrl}
-                      alt="Center logo"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Live Frame / Caption rendered in preview */}
-            {config.frameStyle === 'scan-me-bottom' && (
-              <div
-                className="mt-3.5 px-6 py-2 rounded-full text-xs font-black tracking-widest uppercase shadow-sm flex items-center gap-1.5 transition-all"
-                style={{
-                  backgroundColor: config.frameColor,
-                  color: config.frameTextColor,
-                }}
-              >
-                <span>{captionText}</span>
-              </div>
-            )}
-
-            {config.frameStyle === 'polaroid' && (
-              <div
-                className="mt-3 text-xs font-extrabold uppercase tracking-widest"
-                style={{ color: config.frameColor }}
-              >
-                {captionText}
-              </div>
-            )}
+            {qrDisplayContent}
           </div>
         )}
       </div>
@@ -479,13 +441,13 @@ export const QRPreviewCard: React.FC<QRPreviewCardProps> = ({
                   <button
                     type="button"
                     onClick={onOptimize}
-                    className="text-[10px] font-bold bg-rose-600 text-white px-2 py-0.5 rounded-lg flex items-center gap-1 hover:bg-rose-700"
+                    className="text-[10px] font-bold bg-rose-600 text-white px-2 py-0.5 rounded-lg flex items-center gap-1 hover:bg-rose-700 shadow-xs"
                   >
                     <Wand2 className="w-2.5 h-2.5" /> Auto-Fix
                   </button>
                 </div>
                 <p className="text-[11px] text-rose-700 mt-0.5 leading-snug">
-                  The automated decoder could not read the QR cleanly.
+                  The automated decoder recommends adjusting contrast or logo padding.
                 </p>
                 {recommendations.length > 0 && (
                   <ul className="text-[10px] text-rose-600 list-disc list-inside mt-1 space-y-0.5">
