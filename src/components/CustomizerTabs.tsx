@@ -26,12 +26,12 @@ interface CustomizerTabsProps {
 type TabKey = 'shapes' | 'colors' | 'frame' | 'advanced';
 
 const COLOR_SWATCHES = [
-  { name: 'Signature Violet & Blue', primary: '#7c3aed', secondary: '#2563eb' },
-  { name: 'Electric Cyan & Violet', primary: '#06b6d4', secondary: '#7c3aed' },
-  { name: 'Royal Navy & Blue', primary: '#1e3a8a', secondary: '#2563eb' },
+  { name: 'Signature Violet & Blue', primary: '#7047FF', secondary: '#3563FF' },
+  { name: 'Electric Cyan & Violet', primary: '#06b6d4', secondary: '#7047FF' },
+  { name: 'Royal Navy & Blue', primary: '#111827', secondary: '#3563FF' },
   { name: 'Emerald & Teal', primary: '#059669', secondary: '#0d9488' },
-  { name: 'Sunset Crimson & Violet', primary: '#e11d48', secondary: '#7c3aed' },
-  { name: 'Pitch Black & Slate', primary: '#0f172a', secondary: '#334155' },
+  { name: 'Sunset Crimson & Violet', primary: '#e11d48', secondary: '#7047FF' },
+  { name: 'Pitch Black & Slate', primary: '#111827', secondary: '#475569' },
 ];
 
 export const CustomizerTabs: React.FC<CustomizerTabsProps> = ({

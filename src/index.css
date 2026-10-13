@@ -31,13 +31,17 @@
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #7047FF 0%, #3563FF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gradient-bg {
-  background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #7047FF 0%, #3563FF 100%);
+}
+
+.gradient-bg-subtle {
+  background: linear-gradient(135deg, rgba(112, 71, 255, 0.05) 0%, rgba(53, 99, 255, 0.05) 100%);
 }
 
 .gradient-border-glow {
@@ -47,17 +51,17 @@
 .gradient-border-glow::before {
   content: '';
   position: absolute;
-  inset: -2px;
-  background: linear-gradient(135deg, #7c3aed, #2563eb, #06b6d4);
+  inset: -1px;
+  background: linear-gradient(135deg, #7047FF, #3563FF);
   border-radius: inherit;
   z-index: -1;
-  opacity: 0.6;
-  filter: blur(8px);
+  opacity: 0.4;
+  filter: blur(6px);
   transition: opacity 0.3s ease;
 }
 
 .gradient-border-glow:hover::before {
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
 /* Custom modern range input */

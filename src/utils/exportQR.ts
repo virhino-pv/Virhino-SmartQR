@@ -31,6 +31,18 @@ export function createQRStylingInstance(
       }
     : undefined;
 
+  // Calculate cleared area for logo + badge so dots behind the badge are properly cleared
+  let effectiveImageSize = config.logoSize;
+  if (config.logoUrl) {
+    const ecCap = config.errorCorrectionLevel === 'H' ? 0.3 : config.errorCorrectionLevel === 'Q' ? 0.25 : config.errorCorrectionLevel === 'M' ? 0.15 : 0.07;
+    // Calculate total badge fraction relative to active QR size
+    const paddingFraction = (config.logoBadgeShape !== 'none' ? (config.logoMargin * 2) : 0) / 300;
+    const badgeFraction = Math.min(0.30, config.logoSize + paddingFraction);
+    // qr-code-styling formula: hiddenDotsAxis = Math.sqrt(imageSize * ecCap) * moduleCount
+    // We want hiddenDotsFraction = Math.sqrt(imageSize * ecCap) >= badgeFraction
+    effectiveImageSize = Math.min(0.38, Math.max(config.logoSize, (badgeFraction * badgeFraction) / ecCap + 0.03));
+  }
+
   // If usePlaceholderForDots is true, we pass transparent 1x1 image so dots are cleared in center
   const imageSource = usePlaceholderForDots && config.logoUrl
     ? TRANSPARENT_PLACEHOLDER
@@ -40,7 +52,7 @@ export function createQRStylingInstance(
     width: targetSize,
     height: targetSize,
     type: 'canvas',
-    data: config.url || 'https://logoqrstudio.com',
+    data: config.url || 'https://www.virhino.com',
     image: imageSource,
     margin: config.margin,
     qrOptions: {
@@ -50,8 +62,8 @@ export function createQRStylingInstance(
     },
     imageOptions: {
       hideBackgroundDots: Boolean(config.logoUrl),
-      imageSize: config.logoSize,
-      margin: config.logoMargin,
+      imageSize: effectiveImageSize,
+      margin: 0,
       saveAsBlob: false, // critical: avoids XMLHttpRequest issues with data URLs
     },
     dotsOptions: {
@@ -308,7 +320,7 @@ export async function downloadQRPng(
 ): Promise<void> {
   const qrSize = isHighRes ? 2400 : 1000;
   const canvas = await generateCompositeCanvas(config, qrSize, fallbackPreviewCanvas);
-  const filename = `logoqr-${isHighRes ? 'print-300dpi' : 'web'}-${Date.now()}.png`;
+  const filename = `virhino-qr-${isHighRes ? 'print-300dpi' : 'web'}-${Date.now()}.png`;
 
   try {
     if (canvas.toBlob) {
@@ -339,7 +351,7 @@ export async function downloadQRSvg(config: QRConfig): Promise<void> {
   if (!blob) throw new Error('Failed to generate SVG');
 
   const url = URL.createObjectURL(blob as Blob);
-  triggerDownload(url, `logoqr-vector-${Date.now()}.svg`);
+  triggerDownload(url, `virhino-qr-vector-${Date.now()}.svg`);
   setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 

@@ -47,10 +47,51 @@ export async function validateCanvasQR(
 
     const imageData = ctx.getImageData(0, 0, width, height);
 
-    // First attempt: standard scan
+    // 1. First attempt: standard jsQR scan
     let code = jsQR(imageData.data, width, height, {
       inversionAttempts: 'attemptBoth',
     });
+
+    // 2. Second attempt: Adaptive threshold binarization (essential for soft rounded & gradient modules)
+    if (!code) {
+      const binarized = new Uint8ClampedArray(imageData.data.length);
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        const r = imageData.data[i];
+        const g = imageData.data[i + 1];
+        const b = imageData.data[i + 2];
+        const a = imageData.data[i + 3];
+        // Perceived luminance
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        const val = (a < 128 || lum > 185) ? 255 : 0;
+        binarized[i] = val;
+        binarized[i + 1] = val;
+        binarized[i + 2] = val;
+        binarized[i + 3] = 255;
+      }
+      code = jsQR(binarized, width, height, {
+        inversionAttempts: 'attemptBoth',
+      });
+    }
+
+    // 3. Third attempt: High-contrast threshold
+    if (!code) {
+      const binarizedStrict = new Uint8ClampedArray(imageData.data.length);
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        const r = imageData.data[i];
+        const g = imageData.data[i + 1];
+        const b = imageData.data[i + 2];
+        const a = imageData.data[i + 3];
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        const val = (a < 128 || lum > 150) ? 255 : 0;
+        binarizedStrict[i] = val;
+        binarizedStrict[i + 1] = val;
+        binarizedStrict[i + 2] = val;
+        binarizedStrict[i + 3] = 255;
+      }
+      code = jsQR(binarizedStrict, width, height, {
+        inversionAttempts: 'attemptBoth',
+      });
+    }
 
     const recommendations: string[] = [];
 
